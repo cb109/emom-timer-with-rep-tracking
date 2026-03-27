@@ -166,6 +166,15 @@
       background: #1b65c1;
     }
 
+    .btn-done {
+      background: #38a169;
+      color: #fff;
+    }
+
+    .btn-done:hover {
+      background: #2f855a;
+    }
+
     .btn-reset {
       background: #e2e8f0;
       color: #4a5568;
@@ -313,7 +322,7 @@
     </ul>
 
     <div class="controls">
-      <button class="btn-start" @click="toggle">{{ running ? 'Pause' : (elapsed > 0 ? 'Resume' : 'Start') }}</button>
+      <button :class="finished ? 'btn-done' : 'btn-start'" @click="toggle" :disabled="finished">{{ finished ? 'Done!' : (running ? 'Pause' : (elapsed > 0 ? 'Resume' : 'Start')) }}</button>
       <button class="btn-reset" @click="reset">Reset</button>
     </div>
   </div>
