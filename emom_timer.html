@@ -323,9 +323,10 @@
 
     createApp({
       setup() {
-        const totalRounds = ref(10);
-        const secondsPerRound = ref(60);
-        const defaultReps = ref(10);
+        const saved = JSON.parse(localStorage.getItem('emomSettings') || 'null');
+        const totalRounds = ref(saved?.totalRounds || 10);
+        const secondsPerRound = ref(saved?.secondsPerRound || 60);
+        const defaultReps = ref(saved?.defaultReps ?? 10);
 
         const reps = ref(Array(totalRounds.value).fill(defaultReps.value));
         const elapsed = ref(0);
@@ -428,6 +429,11 @@
           defaultReps.value = newReps;
           elapsed.value = 0;
           reps.value = Array(newRounds).fill(newReps);
+          localStorage.setItem('emomSettings', JSON.stringify({
+            totalRounds: newRounds,
+            secondsPerRound: newSeconds,
+            defaultReps: newReps,
+          }));
           showSettings.value = false;
         }
 
