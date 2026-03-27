@@ -6,6 +6,46 @@
   <title>EMOM Timer</title>
   <script src="https://cdn.jsdelivr.net/npm/vue@3.5.31/dist/vue.global.min.js"></script>
   <style>
+    :root {
+      --bg: #e8ecef;
+      --card-bg: #fff;
+      --text: #4a5568;
+      --text-muted: #6b7b8d;
+      --text-heading: #2d3748;
+      --accent: #2a7de1;
+      --accent-hover: #1b65c1;
+      --text-on-accent: #fff;
+      --border: #9aa5b4;
+      --btn-bg: #e2e8f0;
+      --btn-text: #4a5568;
+      --btn-hover: #cbd5e0;
+      --active-bg: #d6e8fb;
+      --input-border: #cbd5e0;
+      --rep-btn-bg: #fff;
+      --overlay-bg: rgba(0,0,0,0.35);
+      --dialog-bg: #fff;
+    }
+
+    .dark {
+      --bg: #1a202c;
+      --card-bg: #2d3748;
+      --text: #cbd5e0;
+      --text-muted: #a0aec0;
+      --text-heading: #e2e8f0;
+      --accent: #ecc94b;
+      --accent-hover: #d69e2e;
+      --text-on-accent: #2d3748;
+      --border: #4a5568;
+      --btn-bg: #4a5568;
+      --btn-text: #e2e8f0;
+      --btn-hover: #718096;
+      --active-bg: #2a4365;
+      --input-border: #4a5568;
+      --rep-btn-bg: #2d3748;
+      --overlay-bg: rgba(0,0,0,0.55);
+      --dialog-bg: #2d3748;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -16,17 +56,19 @@
 
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: #e8ecef;
+      background: var(--bg);
       display: flex;
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
       margin-top: 24px;
       padding: 24px;
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
     }
 
     #app {
-      background: #fff;
+      background: var(--card-bg);
       border-radius: 20px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.10);
       padding: 32px 36px;
@@ -36,7 +78,7 @@
 
     @media (max-width: 599px) {
       body {
-        background: #fff;
+        background: var(--card-bg);
         margin-top: 0;
         padding: 12px 14px;
       }
@@ -52,7 +94,7 @@
       text-align: center;
       font-size: 5rem;
       font-weight: 700;
-      color: #2a7de1;
+      color: var(--accent);
       letter-spacing: 2px;
       font-variant-numeric: tabular-nums;
     }
@@ -60,7 +102,7 @@
     .round-display {
       text-align: center;
       font-size: 2.2rem;
-      color: #6b7b8d;
+      color: var(--text-muted);
       font-weight: 600;
       margin-bottom: 20px;
     }
@@ -77,13 +119,13 @@
       border-radius: 8px;
       padding: 2px 0px;
       font-size: 1.15rem;
-      color: #4a5568;
+      color: var(--text);
       font-weight: 500;
     }
 
     .round-row.active {
-      background: #d6e8fb;
-      color: #2a7de1;
+      background: var(--active-bg);
+      color: var(--accent);
     }
 
     .round-label {
@@ -93,7 +135,7 @@
     }
 
     .round-label:hover {
-      color: #2a7de1;
+      color: var(--accent);
     }
 
     .rep-controls {
@@ -107,12 +149,12 @@
       width: 30px;
       height: 30px;
       margin: 2px;
-      border: 2px solid #9aa5b4;
+      border: 2px solid var(--border);
       border-radius: 8px;
-      background: #fff;
+      background: var(--rep-btn-bg);
       font-size: 1.2rem;
       font-weight: 700;
-      color: #4a5568;
+      color: var(--text);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -123,13 +165,13 @@
     }
 
     .rep-btn:hover {
-      border-color: #2a7de1;
-      color: #2a7de1;
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     .round-row.active .rep-btn {
-      border-color: #2a7de1;
-      color: #2a7de1;
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     .rep-count {
@@ -158,12 +200,12 @@
     }
 
     .btn-start {
-      background: #2a7de1;
-      color: #fff;
+      background: var(--accent);
+      color: var(--text-on-accent)
     }
 
     .btn-start:hover {
-      background: #1b65c1;
+      background: var(--accent-hover);
     }
 
     .btn-done {
@@ -176,12 +218,12 @@
     }
 
     .btn-reset {
-      background: #e2e8f0;
-      color: #4a5568;
+      background: var(--btn-bg);
+      color: var(--btn-text);
     }
 
     .btn-reset:hover {
-      background: #cbd5e0;
+      background: var(--btn-hover);
     }
 
     .edit-btn {
@@ -191,7 +233,7 @@
       display: block;
       background: none;
       border: none;
-      color: #9aa5b4;
+      color: var(--btn-text);
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
@@ -199,13 +241,30 @@
     }
 
     .edit-btn:hover {
-      color: #2a7de1;
+      color: var(--accent);
+    }
+
+    .theme-btn {
+      position: absolute;
+      top: 8px;
+      left: 12px;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 8px;
+      color: var(--border);
+      line-height: 1;
+    }
+
+    .theme-btn:hover {
+      color: var(--accent);
     }
 
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.35);
+      background: var(--overlay-bg);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -213,7 +272,7 @@
     }
 
     .dialog {
-      background: #fff;
+      background: var(--dialog-bg);
       border-radius: 16px;
       padding: 28px 32px;
       width: 320px;
@@ -224,7 +283,7 @@
     .dialog h2 {
       margin: 0 0 18px 0;
       font-size: 1.3rem;
-      color: #2d3748;
+      color: var(--text-heading);
     }
 
     .dialog-field {
@@ -236,7 +295,7 @@
 
     .dialog-field label {
       font-size: 1rem;
-      color: #4a5568;
+      color: var(--text);
       font-weight: 500;
     }
 
@@ -244,9 +303,11 @@
       width: 80px;
       padding: 6px 10px;
       font-size: 1rem;
-      border: 2px solid #cbd5e0;
+      border: 2px solid var(--input-border);
       border-radius: 8px;
       text-align: center;
+      background: var(--rep-btn-bg);
+      color: var(--text);
     }
 
     .dialog-actions {
@@ -266,18 +327,40 @@
     }
 
     .dialog-cancel {
-      background: #e2e8f0;
-      color: #4a5568;
+      background: var(--btn-bg);
+      color: var(--btn-text);
     }
 
     .dialog-save {
-      background: #2a7de1;
-      color: #fff;
+      background: var(--accent);
+      color: var(--text-on-accent);
     }
   </style>
 </head>
 <body>
   <div id="app">
+    <button class="theme-btn" @click="toggleTheme">
+      <!-- dark -->
+      <svg
+        :style="{ filter: dark ? 'brightness(0.33) invert(1)' : 'none' }"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8V16Z"
+          fill="currentColor"
+        />
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM12 4V8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16V20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4Z"
+          fill="currentColor"
+        />
+      </svg>
+    </button>
     <button class="edit-btn" @click="openSettings">Edit</button>
 
     <div class="overlay" v-if="showSettings">
@@ -346,6 +429,15 @@
         const editTotalRounds = ref(totalRounds.value);
         const editSecondsPerRound = ref(secondsPerRound.value);
         const editDefaultReps = ref(defaultReps.value);
+
+        const dark = ref(localStorage.getItem('emomTheme') === 'dark');
+        if (dark.value) document.documentElement.classList.add('dark');
+
+        function toggleTheme() {
+          dark.value = !dark.value;
+          document.documentElement.classList.toggle('dark', dark.value);
+          localStorage.setItem('emomTheme', dark.value ? 'dark' : 'light');
+        }
 
         const currentRound = computed(() => {
           const r = Math.floor(elapsed.value / secondsPerRound.value) + 1;
@@ -462,6 +554,8 @@
           editTotalRounds,
           editSecondsPerRound,
           editDefaultReps,
+          dark,
+          toggleTheme,
           toggle,
           reset,
           incReps,
