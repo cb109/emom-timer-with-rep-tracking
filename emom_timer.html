@@ -52,16 +52,42 @@
       font-weight: 700;
       color: #2a7de1;
       letter-spacing: 2px;
-      margin-bottom: 4px;
       font-variant-numeric: tabular-nums;
     }
 
+    .round-nav-btn {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: #9aa5b4;
+      cursor: pointer;
+      padding: 4px 8px;
+      line-height: 1;
+      transition: color 0.15s;
+      user-select: none;
+    }
+
+    .round-nav-btn:hover {
+      color: #2a7de1;
+    }
+
+    .round-nav-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .round-row-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
     .round-display {
-      text-align: center;
       font-size: 2.2rem;
       color: #6b7b8d;
       font-weight: 600;
-      margin-bottom: 20px;
     }
 
     .rounds-list {
@@ -73,6 +99,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-radius: 8px;
       padding: 2px 0px;
       font-size: 1.15rem;
       color: #4a5568;
@@ -171,7 +198,11 @@
 <body>
   <div id="app">
     <div class="timer-display">{{ formattedTime }}</div>
-    <div class="round-display">Round: {{ currentRound }}/{{ totalRounds }}</div>
+    <div class="round-row-nav">
+      <button class="round-nav-btn" @click="prevRound" :disabled="elapsed <= 0">&#8249;</button>
+      <div class="round-display">Round: {{ currentRound }}/{{ totalRounds }}</div>
+      <button class="round-nav-btn" @click="nextRound" :disabled="finished">&#8250;</button>
+    </div>
 
     <ul class="rounds-list">
       <li
@@ -261,6 +292,25 @@
           reps.value = Array(totalRounds).fill(defaultReps);
         }
 
+        function prevRound() {
+          const roundStart = (currentRound.value - 1) * secondsPerRound;
+          if (elapsed.value > roundStart) {
+            elapsed.value = roundStart;
+          } else if (currentRound.value > 1) {
+            elapsed.value = (currentRound.value - 2) * secondsPerRound;
+          }
+        }
+
+        function nextRound() {
+          if (finished.value) return;
+          const nextStart = currentRound.value * secondsPerRound;
+          if (nextStart >= totalRounds * secondsPerRound) {
+            elapsed.value = totalRounds * secondsPerRound;
+          } else {
+            elapsed.value = nextStart;
+          }
+        }
+
         function incReps(round) {
           reps.value[round - 1]++;
         }
@@ -280,10 +330,13 @@
           reps,
           elapsed,
           running,
+          finished,
           currentRound,
           formattedTime,
           toggle,
           reset,
+          prevRound,
+          nextRound,
           incReps,
           decReps,
         };
