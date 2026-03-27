@@ -21,6 +21,7 @@
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
+      margin-top: 24px;
       padding: 24px;
     }
 
@@ -36,6 +37,7 @@
     @media (max-width: 599px) {
       body {
         background: #fff;
+        margin-top: 0;
         padding: 12px 14px;
       }
       #app {
@@ -55,39 +57,12 @@
       font-variant-numeric: tabular-nums;
     }
 
-    .round-nav-btn {
-      background: none;
-      border: none;
-      font-size: 2rem;
-      color: #9aa5b4;
-      cursor: pointer;
-      padding: 4px 8px;
-      line-height: 1;
-      transition: color 0.15s;
-      user-select: none;
-    }
-
-    .round-nav-btn:hover {
-      color: #2a7de1;
-    }
-
-    .round-nav-btn:disabled {
-      opacity: 0.3;
-      cursor: default;
-    }
-
-    .round-row-nav {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
     .round-display {
+      text-align: center;
       font-size: 2.2rem;
       color: #6b7b8d;
       font-weight: 600;
+      margin-bottom: 20px;
     }
 
     .rounds-list {
@@ -109,16 +84,22 @@
     .round-row.active {
       background: #d6e8fb;
       color: #2a7de1;
-      font-weight: 700;
     }
 
     .round-label {
       min-width: 100px;
+      margin-left: 4px;
+      cursor: pointer;
+    }
+
+    .round-label:hover {
+      color: #2a7de1;
     }
 
     .rep-controls {
       display: flex;
       align-items: center;
+      margin-right: 4px;
       gap: 6px;
     }
 
@@ -198,20 +179,16 @@
 <body>
   <div id="app">
     <div class="timer-display">{{ formattedTime }}</div>
-    <div class="round-row-nav">
-      <button class="round-nav-btn" @click="prevRound" :disabled="elapsed <= 0">&#8249;</button>
-      <div class="round-display">Round: {{ currentRound }}/{{ totalRounds }}</div>
-      <button class="round-nav-btn" @click="nextRound" :disabled="finished">&#8250;</button>
-    </div>
+    <div class="round-display">Round: {{ currentRound }}/{{ totalRounds }}</div>
 
     <ul class="rounds-list">
       <li
         v-for="round in totalRounds"
         :key="round"
         class="round-row"
-        :class="{ active: round === currentRound && running }"
+        :class="{ active: round === currentRound }"
       >
-        <span class="round-label">Round {{ round }}:</span>
+        <span class="round-label" @click="jumpToRound(round)">Round {{ round }}:</span>
         <div class="rep-controls">
           <button class="rep-btn" @click="decReps(round)">−</button>
           <span class="rep-count">{{ reps[round - 1] }}</span>
@@ -292,25 +269,6 @@
           reps.value = Array(totalRounds).fill(defaultReps);
         }
 
-        function prevRound() {
-          const roundStart = (currentRound.value - 1) * secondsPerRound;
-          if (elapsed.value > roundStart) {
-            elapsed.value = roundStart;
-          } else if (currentRound.value > 1) {
-            elapsed.value = (currentRound.value - 2) * secondsPerRound;
-          }
-        }
-
-        function nextRound() {
-          if (finished.value) return;
-          const nextStart = currentRound.value * secondsPerRound;
-          if (nextStart >= totalRounds * secondsPerRound) {
-            elapsed.value = totalRounds * secondsPerRound;
-          } else {
-            elapsed.value = nextStart;
-          }
-        }
-
         function incReps(round) {
           reps.value[round - 1]++;
         }
@@ -318,6 +276,13 @@
         function decReps(round) {
           if (reps.value[round - 1] > 0) {
             reps.value[round - 1]--;
+          }
+        }
+
+        function jumpToRound(round) {
+          if (confirm('Jump to Round ' + round + '?')) {
+            stop();
+            elapsed.value = (round - 1) * secondsPerRound;
           }
         }
 
@@ -335,10 +300,9 @@
           formattedTime,
           toggle,
           reset,
-          prevRound,
-          nextRound,
           incReps,
           decReps,
+          jumpToRound,
         };
       }
     }).mount('#app');
