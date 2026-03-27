@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMOM Timer</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #e8ecef;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    #app {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      padding: 32px 36px;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .timer-display {
+      text-align: center;
+      font-size: 5rem;
+      font-weight: 700;
+      color: #2a7de1;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .round-display {
+      text-align: center;
+      font-size: 2.2rem;
+      color: #6b7b8d;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .rounds-list {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+
+    .round-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      border-radius: 8px;
+      margin-bottom: 2px;
+      font-size: 1.15rem;
+      color: #4a5568;
+      font-weight: 500;
+    }
+
+    .round-row.active {
+      background: #d6e8fb;
+      color: #2a7de1;
+      font-weight: 700;
+    }
+
+    .round-label {
+      min-width: 100px;
+    }
+
+    .rep-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rep-btn {
+      width: 34px;
+      height: 34px;
+      border: 2px solid #9aa5b4;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #4a5568;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: border-color 0.15s, color 0.15s;
+      line-height: 1;
+    }
+
+    .rep-btn:hover {
+      border-color: #2a7de1;
+      color: #2a7de1;
+    }
+
+    .round-row.active .rep-btn {
+      border-color: #2a7de1;
+      color: #2a7de1;
+    }
+
+    .rep-count {
+      font-size: 1.5rem;
+      font-weight: 700;
+      min-width: 32px;
+      text-align: center;
+      color: inherit;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .controls button {
+      padding: 10px 28px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-start {
+      background: #2a7de1;
+      color: #fff;
+    }
+
+    .btn-start:hover {
+      background: #1b65c1;
+    }
+
+    .btn-reset {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    .btn-reset:hover {
+      background: #cbd5e0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="timer-display">{{ formattedTime }}</div>
+    <div class="round-display">Round: {{ currentRound }}/{{ totalRounds }}</div>
+
+    <ul class="rounds-list">
+      <li
+        v-for="round in totalRounds"
+        :key="round"
+        class="round-row"
+        :class="{ active: round === currentRound && running }"
+      >
+        <span class="round-label">Round {{ round }}:</span>
+        <div class="rep-controls">
+          <button class="rep-btn" @click="decReps(round)">−</button>
+          <span class="rep-count">{{ reps[round - 1] }}</span>
+          <button class="rep-btn" @click="incReps(round)">+</button>
+        </div>
+      </li>
+    </ul>
+
+    <div class="controls">
+      <button class="btn-start" @click="toggle">{{ running ? 'Pause' : (elapsed > 0 ? 'Resume' : 'Start') }}</button>
+      <button class="btn-reset" @click="reset">Reset</button>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, onUnmounted } = Vue;
+
+    createApp({
+      setup() {
+        const totalRounds = 10;
+        const secondsPerRound = 60;
+        const defaultReps = 10;
+
+        const reps = ref(Array(totalRounds).fill(defaultReps));
+        const elapsed = ref(0); // total seconds elapsed
+        const running = ref(false);
+        let intervalId = null;
+
+        const currentRound = computed(() => {
+          const r = Math.floor(elapsed.value / secondsPerRound) + 1;
+          return Math.min(r, totalRounds);
+        });
+
+        const timeInRound = computed(() => {
+          return secondsPerRound - (elapsed.value % secondsPerRound);
+        });
+
+        const formattedTime = computed(() => {
+          if (finished.value) return '00:00';
+          const t = timeInRound.value;
+          const m = Math.floor(t / 60);
+          const s = t % 60;
+          return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+        });
+
+        const finished = computed(() => elapsed.value >= totalRounds * secondsPerRound);
+
+        function tick() {
+          if (finished.value) {
+            stop();
+            return;
+          }
+          elapsed.value++;
+          if (finished.value) {
+            stop();
+          }
+        }
+
+        function start() {
+          if (finished.value) return;
+          running.value = true;
+          intervalId = setInterval(tick, 1000);
+        }
+
+        function stop() {
+          running.value = false;
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+
+        function toggle() {
+          running.value ? stop() : start();
+        }
+
+        function reset() {
+          stop();
+          elapsed.value = 0;
+          reps.value = Array(totalRounds).fill(defaultReps);
+        }
+
+        function incReps(round) {
+          reps.value[round - 1]++;
+        }
+
+        function decReps(round) {
+          if (reps.value[round - 1] > 0) {
+            reps.value[round - 1]--;
+          }
+        }
+
+        onUnmounted(() => {
+          clearInterval(intervalId);
+        });
+
+        return {
+          totalRounds,
+          reps,
+          elapsed,
+          running,
+          currentRound,
+          formattedTime,
+          toggle,
+          reset,
+          incReps,
+          decReps,
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
