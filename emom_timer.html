@@ -480,7 +480,11 @@
           }
           elapsed.value++;
           if (elapsed.value % secondsPerRound.value === 0) {
-            beep(880, 150);
+            if (finished.value) {
+              beep(523, 120); beep(659, 120); setTimeout(() => beep(784, 200), 150);
+            } else {
+              beep(880, 150);
+            }
           }
           if (finished.value) {
             stop();
