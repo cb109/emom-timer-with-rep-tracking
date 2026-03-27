@@ -174,10 +174,125 @@
     .btn-reset:hover {
       background: #cbd5e0;
     }
+
+    .edit-btn {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      display: block;
+      background: none;
+      border: none;
+      color: #9aa5b4;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .edit-btn:hover {
+      color: #2a7de1;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .dialog {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 32px;
+      width: 320px;
+      max-width: 90vw;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+
+    .dialog h2 {
+      margin: 0 0 18px 0;
+      font-size: 1.3rem;
+      color: #2d3748;
+    }
+
+    .dialog-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .dialog-field label {
+      font-size: 1rem;
+      color: #4a5568;
+      font-weight: 500;
+    }
+
+    .dialog-field input {
+      width: 80px;
+      padding: 6px 10px;
+      font-size: 1rem;
+      border: 2px solid #cbd5e0;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .dialog-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .dialog-actions button {
+      padding: 8px 22px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .dialog-cancel {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    .dialog-save {
+      background: #2a7de1;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
   <div id="app">
+    <button class="edit-btn" @click="openSettings">Edit</button>
+
+    <div class="overlay" v-if="showSettings">
+      <div class="dialog">
+        <h2>Settings</h2>
+        <div class="dialog-field">
+          <label>Round time (s)</label>
+          <input type="number" v-model.number="editSecondsPerRound" min="1">
+        </div>
+        <div class="dialog-field">
+          <label>Rounds</label>
+          <input type="number" v-model.number="editTotalRounds" min="1" max="99">
+        </div>
+        <div class="dialog-field">
+          <label>Reps per round</label>
+          <input type="number" v-model.number="editDefaultReps" min="0">
+        </div>
+        <div class="dialog-actions">
+          <button class="dialog-cancel" @click="closeSettings">Cancel</button>
+          <button class="dialog-save" @click="saveSettings">Save</button>
+        </div>
+      </div>
+    </div>
+
     <div class="timer-display">{{ formattedTime }}</div>
     <div class="round-display">Round: {{ currentRound }}/{{ totalRounds }}</div>
 
@@ -208,22 +323,27 @@
 
     createApp({
       setup() {
-        const totalRounds = 10;
-        const secondsPerRound = 60;
-        const defaultReps = 10;
+        const totalRounds = ref(10);
+        const secondsPerRound = ref(60);
+        const defaultReps = ref(10);
 
-        const reps = ref(Array(totalRounds).fill(defaultReps));
-        const elapsed = ref(0); // total seconds elapsed
+        const reps = ref(Array(totalRounds.value).fill(defaultReps.value));
+        const elapsed = ref(0);
         const running = ref(false);
         let intervalId = null;
 
+        const showSettings = ref(false);
+        const editTotalRounds = ref(totalRounds.value);
+        const editSecondsPerRound = ref(secondsPerRound.value);
+        const editDefaultReps = ref(defaultReps.value);
+
         const currentRound = computed(() => {
-          const r = Math.floor(elapsed.value / secondsPerRound) + 1;
-          return Math.min(r, totalRounds);
+          const r = Math.floor(elapsed.value / secondsPerRound.value) + 1;
+          return Math.min(r, totalRounds.value);
         });
 
         const timeInRound = computed(() => {
-          return secondsPerRound - (elapsed.value % secondsPerRound);
+          return secondsPerRound.value - (elapsed.value % secondsPerRound.value);
         });
 
         const formattedTime = computed(() => {
@@ -234,7 +354,7 @@
           return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
         });
 
-        const finished = computed(() => elapsed.value >= totalRounds * secondsPerRound);
+        const finished = computed(() => elapsed.value >= totalRounds.value * secondsPerRound.value);
 
         function tick() {
           if (finished.value) {
@@ -266,7 +386,7 @@
         function reset() {
           stop();
           elapsed.value = 0;
-          reps.value = Array(totalRounds).fill(defaultReps);
+          reps.value = Array(totalRounds.value).fill(defaultReps.value);
         }
 
         function incReps(round) {
@@ -282,8 +402,33 @@
         function jumpToRound(round) {
           if (confirm('Jump to Round ' + round + '?')) {
             stop();
-            elapsed.value = (round - 1) * secondsPerRound;
+            elapsed.value = (round - 1) * secondsPerRound.value;
           }
+        }
+
+        function openSettings() {
+          editTotalRounds.value = totalRounds.value;
+          editSecondsPerRound.value = secondsPerRound.value;
+          editDefaultReps.value = defaultReps.value;
+          showSettings.value = true;
+        }
+
+        function closeSettings() {
+          showSettings.value = false;
+        }
+
+        function saveSettings() {
+          const newRounds = Math.max(1, editTotalRounds.value || 1);
+          const newSeconds = Math.max(1, editSecondsPerRound.value || 1);
+          const newReps = Math.max(0, editDefaultReps.value || 0);
+
+          stop();
+          totalRounds.value = newRounds;
+          secondsPerRound.value = newSeconds;
+          defaultReps.value = newReps;
+          elapsed.value = 0;
+          reps.value = Array(newRounds).fill(newReps);
+          showSettings.value = false;
         }
 
         onUnmounted(() => {
@@ -298,11 +443,18 @@
           finished,
           currentRound,
           formattedTime,
+          showSettings,
+          editTotalRounds,
+          editSecondsPerRound,
+          editDefaultReps,
           toggle,
           reset,
           incReps,
           decReps,
           jumpToRound,
+          openSettings,
+          closeSettings,
+          saveSettings,
         };
       }
     }).mount('#app');
