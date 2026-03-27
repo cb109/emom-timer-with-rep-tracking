@@ -374,7 +374,7 @@
 </head>
 <body>
   <div id="app">
-    <button class="theme-btn" @click="toggleTheme">
+    <button v-if="!running" class="theme-btn" @click="toggleTheme">
       <!-- dark -->
       <svg
         :style="{ filter: dark ? 'brightness(0.33) invert(1)' : 'none' }"
@@ -396,7 +396,7 @@
         />
       </svg>
     </button>
-    <button class="edit-btn" @click="openSettings">Edit</button>
+    <button v-if="!running" class="edit-btn" @click="openSettings">Edit</button>
 
     <div class="overlay" v-if="showSettings">
       <div class="dialog">
