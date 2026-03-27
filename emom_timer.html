@@ -458,12 +458,30 @@
 
         const finished = computed(() => elapsed.value >= totalRounds.value * secondsPerRound.value);
 
+        let audioCtx = null;
+        function beep(freq = 660, duration = 120) {
+          if (!audioCtx) audioCtx = new AudioContext();
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.frequency.value = freq;
+          osc.type = 'sine';
+          gain.gain.value = 0.15;
+          osc.start();
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration / 1000);
+          osc.stop(audioCtx.currentTime + duration / 1000);
+        }
+
         function tick() {
           if (finished.value) {
             stop();
             return;
           }
           elapsed.value++;
+          if (elapsed.value % secondsPerRound.value === 0) {
+            beep(880, 150);
+          }
           if (finished.value) {
             stop();
           }
@@ -472,6 +490,7 @@
         function start() {
           if (finished.value) return;
           running.value = true;
+          beep(660, 120);
           intervalId = setInterval(tick, 1000);
         }
 
