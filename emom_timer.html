@@ -80,13 +80,20 @@
       body {
         background: var(--card-bg);
         margin-top: 0;
-        padding: 12px 14px;
+        padding: 0px;
       }
       #app {
         border-radius: 0;
         box-shadow: none;
         padding: 0;
         max-width: 100%;
+      }
+      .timer-section.running,
+      .timer-section.finished {
+        border-radius: 0;
+      }
+      .rounds-list {
+        padding: 0px 14px;
       }
     }
 
@@ -125,7 +132,7 @@
 
     .timer-display {
       text-align: center;
-      font-size: 6rem;
+      font-size: 7rem;
       font-weight: 700;
       line-height: 1.1;
       margin-top: 8px;
@@ -144,7 +151,7 @@
 
     .rounds-list {
       list-style: none;
-      margin-bottom: 24px;
+      margin-bottom: 12px;
     }
 
     .round-row {
@@ -244,12 +251,8 @@
     }
 
     .btn-done {
-      background: #38a169;
-      color: #fff;
-    }
-
-    .btn-done:hover {
-      background: #2f855a;
+      background: transparent;
+      color: #38a169;
     }
 
     .btn-reset {
@@ -264,7 +267,7 @@
     .edit-btn {
       position: absolute;
       top: 4px;
-      right: 8px;
+      right: 4px;
       display: block;
       background: none;
       border: none;
@@ -282,7 +285,7 @@
     .theme-btn {
       position: absolute;
       top: 4px;
-      left: 8px;
+      left: 4px;
       background: none;
       border: none;
       font-size: 1.2rem;
@@ -374,7 +377,7 @@
 </head>
 <body>
   <div id="app">
-    <button v-if="!running" class="theme-btn" @click="toggleTheme">
+    <button v-if="!running && !finished" class="theme-btn" @click="toggleTheme">
       <!-- dark -->
       <svg
         :style="{ filter: dark ? 'brightness(0.33) invert(1)' : 'none' }"
@@ -396,7 +399,7 @@
         />
       </svg>
     </button>
-    <button v-if="!running" class="edit-btn" @click="openSettings">Edit</button>
+    <button v-if="!running && !finished" class="edit-btn" @click="openSettings">Edit</button>
 
     <div class="overlay" v-if="showSettings">
       <div class="dialog">
@@ -442,7 +445,7 @@
     </ul>
 
     <div class="controls">
-      <button :class="finished ? 'btn-done' : 'btn-start'" @click="toggle" :disabled="finished">{{ finished ? 'Done!' : (running ? 'Pause' : (elapsed > 0 ? 'Resume' : 'Start')) }}</button>
+      <button :class="finished ? 'btn-done' : 'btn-start'" @click="toggle" :disabled="finished">{{ finished ? 'All done!' : (running ? 'Pause' : (elapsed > 0 ? 'Resume' : 'Start')) }}</button>
       <button class="btn-reset" @click="reset">Reset</button>
     </div>
   </div>
