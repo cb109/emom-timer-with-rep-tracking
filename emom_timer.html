@@ -473,6 +473,26 @@
         const dark = ref(localStorage.getItem('emomTheme') === 'dark');
         if (dark.value) document.documentElement.classList.add('dark');
 
+        // Screen Wake Lock to prevent screen dimming/lock while running
+        let wakeLock = null;
+        async function requestWakeLock() {
+          if ('wakeLock' in navigator) {
+            try {
+              wakeLock = await navigator.wakeLock.request('screen');
+              wakeLock.addEventListener('release', () => { wakeLock = null; });
+            } catch (e) { /* user denied or not supported */ }
+          }
+        }
+        function releaseWakeLock() {
+          if (wakeLock) { wakeLock.release(); wakeLock = null; }
+        }
+        // Re-acquire wake lock when page becomes visible again (OS releases it on hide)
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible' && running.value && !finished.value) {
+            requestWakeLock();
+          }
+        });
+
         function toggleTheme() {
           dark.value = !dark.value;
           document.documentElement.classList.toggle('dark', dark.value);
@@ -535,6 +555,7 @@
           if (finished.value) return;
           running.value = true;
           beep(660, 120);
+          requestWakeLock();
           intervalId = setInterval(tick, 1000);
         }
 
@@ -542,6 +563,7 @@
           running.value = false;
           clearInterval(intervalId);
           intervalId = null;
+          releaseWakeLock();
         }
 
         function toggle() {
