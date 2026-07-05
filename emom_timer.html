@@ -69,11 +69,11 @@
 
     #app {
       background: var(--card-bg);
-      border-radius: 20px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.10);
       padding: 32px 36px;
       max-width: 400px;
       width: 100%;
+      transition: background 0.25s;
     }
 
     @media (max-width: 599px) {
@@ -83,24 +83,15 @@
         padding: 0px;
       }
       #app {
-        border-radius: 0;
         box-shadow: none;
         padding: 0;
         max-width: 100%;
-      }
-      .timer-section.running,
-      .timer-section.finished {
-        border-radius: 0;
-      }
-      .rounds-list {
-        padding: 0px 14px;
       }
     }
 
     .timer-section {
       padding: 12px 8px;
-      border-radius: 12px;
-      margin-bottom: 8px;
+      padding-bottom: 16px;
       transition: background 0.25s, color 0.25s;
     }
 
@@ -158,8 +149,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-radius: 8px;
-      padding: 2px 0px;
+      padding: 2px 14px;
       font-size: 1.15rem;
       color: var(--text);
       font-weight: 500;
@@ -168,6 +158,23 @@
     .round-row.active {
       background: var(--active-bg);
       color: var(--accent);
+    }
+
+    .round-row.completed {
+      background: var(--accent);
+      color: var(--card-bg);
+    }
+
+    .round-row.completed .rep-btn {
+      border-color: var(--card-bg);
+      color: var(--card-bg);
+      background: transparent;
+    }
+
+    .round-row.completed .round-label:hover,
+    .round-row.completed .rep-btn:hover {
+      color: var(--card-bg);
+      border-color: var(--card-bg);
     }
 
     .round-label {
@@ -433,7 +440,7 @@
         v-for="round in totalRounds"
         :key="round"
         class="round-row"
-        :class="{ active: round === currentRound }"
+        :class="{ active: round === currentRound && !isRoundCompleted(round), completed: isRoundCompleted(round) && !finished }"
       >
         <span class="round-label" @click="jumpToRound(round)">Round {{ round }}:</span>
         <div class="rep-controls">
@@ -607,6 +614,10 @@
           }
         }
 
+        function isRoundCompleted(round) {
+          return elapsed.value >= round * secondsPerRound.value;
+        }
+
         function openSettings() {
           editTotalRounds.value = totalRounds.value;
           editSecondsPerRound.value = secondsPerRound.value;
@@ -659,6 +670,7 @@
           reset,
           incReps,
           decReps,
+          isRoundCompleted,
           jumpToRound,
           openSettings,
           closeSettings,
