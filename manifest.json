@@ -1,10 +1,7 @@
 {
   "name": "EMOM Timer",
   "short_name": "EMOM",
-  "id": "/",
   "description": "EMOM workout timer with rep tracking",
-  "start_url": "/emom_timer.html",
-  "scope": "/",
   "display": "standalone",
   "background_color": "#e8ecef",
   "theme_color": "#2a7de1",
@@ -12,14 +9,12 @@
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
