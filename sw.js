@@ -1,11 +1,11 @@
-const CACHE_NAME = 'emom-v2';
+const CACHE_NAME = 'emom-v3';
 const APP_SHELL = './emom_timer.html';
 const ASSETS = [
   './',
   APP_SHELL,
   './manifest.json',
-  './icon-192.svg',
-  './icon-512.svg',
+  './icon-192.png',
+  './icon-512.png',
   'https://cdn.jsdelivr.net/npm/vue@3.5.31/dist/vue.global.min.js'
 ];
 
@@ -15,7 +15,7 @@ async function precacheAssets() {
   const cache = await caches.open(CACHE_NAME);
 
   // Keep required app files strict for install.
-  await cache.addAll(['./', APP_SHELL, './manifest.json', './icon-192.svg', './icon-512.svg']);
+  await cache.addAll(['./', APP_SHELL, './manifest.json', './icon-192.png', './icon-512.png']);
 
   // CDN dependency is best-effort to avoid install failures from transient outages.
   try {
