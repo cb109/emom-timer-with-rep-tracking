@@ -578,11 +578,25 @@
 
         function incReps(round) {
           reps.value[round - 1]++;
+
+          if (round === currentRound.value) {
+            const updated = reps.value[round - 1];
+            for (let i = round; i < totalRounds.value; i++) {
+              reps.value[i] = updated;
+            }
+          }
         }
 
         function decReps(round) {
           if (reps.value[round - 1] > 0) {
             reps.value[round - 1]--;
+
+            if (round === currentRound.value) {
+              const updated = reps.value[round - 1];
+              for (let i = round; i < totalRounds.value; i++) {
+                reps.value[i] = updated;
+              }
+            }
           }
         }
 
