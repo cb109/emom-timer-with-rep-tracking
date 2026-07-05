@@ -382,10 +382,43 @@
       background: var(--accent);
       color: var(--text-on-accent);
     }
+
+    .update-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0px 0 12px 0;
+      padding: 10px 12px;
+      padding-top: 48px;
+      border-radius: 10px;
+      background: var(--active-bg);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .update-banner button {
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: var(--text-on-accent);
+      font-weight: 600;
+      padding: 7px 12px;
+      cursor: pointer;
+    }
+
+    .update-banner button:hover {
+      background: var(--accent-hover);
+    }
   </style>
 </head>
 <body>
   <div id="app">
+    <div class="update-banner" v-if="updateAvailable">
+      <span>New version available.</span>
+      <button @click="refreshApp">Update</button>
+    </div>
+
     <button v-if="!running && !finished" class="theme-btn" @click="toggleTheme">
       <!-- dark -->
       <svg
@@ -460,7 +493,7 @@
   </div>
 
   <script>
-    const { createApp, ref, computed, onUnmounted } = Vue;
+    const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
 
     createApp({
       setup() {
@@ -478,6 +511,8 @@
         const editTotalRounds = ref(totalRounds.value);
         const editSecondsPerRound = ref(secondsPerRound.value);
         const editDefaultReps = ref(defaultReps.value);
+        const updateAvailable = ref(false);
+        let reloadingForUpdate = false;
 
         const dark = ref(localStorage.getItem('emomTheme') === 'dark');
         if (dark.value) document.documentElement.classList.add('dark');
@@ -650,6 +685,42 @@
           showSettings.value = false;
         }
 
+        function refreshApp() {
+          if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+          } else {
+            window.location.reload();
+          }
+        }
+
+        onMounted(() => {
+          if (!('serviceWorker' in navigator)) return;
+
+          navigator.serviceWorker.register('./sw.js').then((registration) => {
+            if (registration.waiting) {
+              updateAvailable.value = true;
+            }
+
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (!newWorker) return;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  updateAvailable.value = true;
+                }
+              });
+            });
+          }).catch(() => {
+            // Registration failures should not break the timer UI.
+          });
+
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (reloadingForUpdate) return;
+            reloadingForUpdate = true;
+            window.location.reload();
+          });
+        });
+
         onUnmounted(() => {
           clearInterval(intervalId);
         });
@@ -666,6 +737,7 @@
           editTotalRounds,
           editSecondsPerRound,
           editDefaultReps,
+          updateAvailable,
           dark,
           toggleTheme,
           toggle,
@@ -677,16 +749,10 @@
           openSettings,
           closeSettings,
           saveSettings,
+          refreshApp,
         };
       }
     }).mount('#app');
-  </script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js');
-      });
-    }
   </script>
 </body>
 </html>
