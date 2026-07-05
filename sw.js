@@ -9,6 +9,22 @@ const ASSETS = [
   'https://cdn.jsdelivr.net/npm/vue@3.5.31/dist/vue.global.min.js'
 ];
 
+const APP_SHELL_URL = new URL(APP_SHELL, self.registration.scope).href;
+
+async function precacheAssets() {
+  const cache = await caches.open(CACHE_NAME);
+
+  // Keep required app files strict for install.
+  await cache.addAll(['./', APP_SHELL, './manifest.json', './icon-192.svg', './icon-512.svg']);
+
+  // CDN dependency is best-effort to avoid install failures from transient outages.
+  try {
+    await cache.add('https://cdn.jsdelivr.net/npm/vue@3.5.31/dist/vue.global.min.js');
+  } catch (_) {
+    // Ignore optional CDN precache failures.
+  }
+}
+
 async function putInCache(request, response) {
   const cache = await caches.open(CACHE_NAME);
   await cache.put(request, response);
@@ -26,15 +42,23 @@ async function networkFirst(request, fallbackUrl) {
     const cached = await cache.match(request);
     if (cached) return cached;
     if (fallbackUrl) {
-      const fallback = await cache.match(fallbackUrl);
+      const fallback =
+        (await cache.match(fallbackUrl)) ||
+        (await cache.match(APP_SHELL_URL)) ||
+        (await cache.match(APP_SHELL)) ||
+        (await cache.match('./'));
       if (fallback) return fallback;
     }
-    throw _;
+    return new Response('Offline', {
+      status: 503,
+      statusText: 'Offline',
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+    });
   }
 }
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
+  e.waitUntil(precacheAssets());
 });
 
 self.addEventListener('message', (e) => {
