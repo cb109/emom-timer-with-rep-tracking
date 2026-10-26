@@ -1,4 +1,4 @@
-const CACHE_NAME = 'emom-v4';
+const CACHE_NAME = 'emom-v5';
 const APP_SHELL = './emom_timer.html';
 const ASSETS = [
   './',
@@ -15,7 +15,14 @@ async function precacheAssets() {
   const cache = await caches.open(CACHE_NAME);
 
   // Keep required app files strict for install.
-  await cache.addAll(['./', APP_SHELL, './manifest.json', './icon-192.png', './icon-512.png']);
+  await cache.addAll([APP_SHELL, './manifest.json', './icon-192.png', './icon-512.png']);
+
+  // The folder root may have no index page (e.g. GitHub Pages), so it's best-effort.
+  try {
+    await cache.add('./');
+  } catch (_) {
+    // Ignore missing directory index.
+  }
 
   // CDN dependency is best-effort to avoid install failures from transient outages.
   try {
