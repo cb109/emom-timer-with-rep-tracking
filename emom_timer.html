@@ -92,6 +92,10 @@
     }
 
     .timer-section {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: var(--card-bg);
       padding: 12px 8px;
       padding-bottom: 16px;
       transition: background 0.25s, color 0.25s;
@@ -123,6 +127,24 @@
       opacity: 0.7;
     }
 
+    .timer-section.running .exercise-display {
+      color: var(--card-bg);
+    }
+
+    .timer-section.finished .exercise-display {
+      color: #fff;
+    }
+
+    .exercise-display {
+      text-align: center;
+      font-size: 1.7rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--text-heading);
+      padding: 0 8px;
+      margin-bottom: 4px;
+    }
+
     .timer-display {
       text-align: center;
       font-size: 7rem;
@@ -142,9 +164,39 @@
       margin-bottom: 8px;
     }
 
+    .rounds {
+      margin-bottom: 12px;
+    }
+
     .rounds-list {
       list-style: none;
-      margin-bottom: 12px;
+    }
+
+    .round-heading {
+      padding: 12px 14px 4px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    .workout-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 14px 6px;
+    }
+
+    .workout-name {
+      font-weight: 700;
+      color: var(--text-heading);
+    }
+
+    .workout-summary {
+      font-size: 0.9rem;
+      color: var(--text-muted);
     }
 
     .round-row {
@@ -180,8 +232,10 @@
     }
 
     .round-label {
+      flex: 1;
       min-width: 100px;
       margin-left: 4px;
+      line-height: 1.2;
       cursor: pointer;
     }
 
@@ -238,6 +292,7 @@
       gap: 12px;
       justify-content: center;
       margin-top: 8px;
+      margin-bottom: 24px;
     }
 
     .controls button {
@@ -275,6 +330,7 @@
 
     .edit-btn {
       position: absolute;
+      z-index: 2;
       top: 4px;
       right: 4px;
       display: block;
@@ -293,6 +349,7 @@
 
     .theme-btn {
       position: absolute;
+      z-index: 2;
       top: 4px;
       left: 4px;
       background: none;
@@ -308,79 +365,291 @@
       color: var(--accent);
     }
 
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--overlay-bg);
+    .screen {
+      padding: 4px 0;
+    }
+
+    @media (max-width: 599px) {
+      .screen {
+        padding: 16px 14px;
+      }
+    }
+
+    .screen-header {
       display: flex;
       align-items: center;
-      justify-content: center;
-      z-index: 100;
+      gap: 4px;
+      margin-bottom: 16px;
     }
 
-    .dialog {
-      background: var(--dialog-bg);
-      border-radius: 16px;
-      padding: 28px 32px;
-      width: 320px;
-      max-width: 90vw;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    }
-
-    .dialog h2 {
-      margin: 0 0 18px 0;
+    .screen-header h2 {
       font-size: 1.3rem;
       color: var(--text-heading);
     }
 
-    .dialog-field {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--btn-text);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 8px;
     }
 
-    .dialog-field label {
-      font-size: 1rem;
-      color: var(--text);
-      font-weight: 500;
+    .link-btn:hover {
+      color: var(--accent);
     }
 
-    .dialog-field input {
-      width: 80px;
-      padding: 6px 10px;
-      font-size: 1rem;
-      border: 2px solid var(--input-border);
-      border-radius: 8px;
-      text-align: center;
-      background: var(--rep-btn-bg);
-      color: var(--text);
+    .link-btn.danger:hover {
+      color: #e53e3e;
     }
 
-    .dialog-actions {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 20px;
-    }
-
-    .dialog-actions button {
-      padding: 8px 22px;
+    .btn {
+      padding: 10px 22px;
       font-size: 1rem;
       font-weight: 600;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
     }
 
-    .dialog-cancel {
+    .btn-block {
+      display: block;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--text-on-accent);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-secondary {
       background: var(--btn-bg);
       color: var(--btn-text);
     }
 
-    .dialog-save {
-      background: var(--accent);
-      color: var(--text-on-accent);
+    .btn-secondary:hover {
+      background: var(--btn-hover);
+    }
+
+    .workout-list {
+      list-style: none;
+      margin-bottom: 12px;
+    }
+
+    .workout-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 8px 12px 14px;
+      margin-bottom: 8px;
+      border: 2px solid var(--input-border);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .workout-item.active {
+      background: var(--active-bg);
+      border-color: var(--accent);
+    }
+
+    .workout-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .workout-exercises {
+      margin-top: 4px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .workout-item-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .form-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .form-field label {
+      font-weight: 500;
+    }
+
+    .text-input,
+    .num-input {
+      padding: 6px 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 2px solid var(--input-border);
+      border-radius: 8px;
+      background: var(--rep-btn-bg);
+      color: var(--text);
+    }
+
+    .text-input:focus,
+    .num-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-field .text-input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .num-input {
+      width: 80px;
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      color: var(--text-heading);
+      margin: 20px 0 10px;
+    }
+
+    .ex-item {
+      border: 2px solid var(--input-border);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .ex-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ex-num {
+      min-width: 18px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .ac-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ac-wrap .text-input {
+      width: 100%;
+    }
+
+    .ac-list {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 4px);
+      z-index: 10;
+      list-style: none;
+      max-height: 260px;
+      overflow-y: auto;
+      background: var(--dialog-bg);
+      border: 2px solid var(--input-border);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    }
+
+    .ac-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      padding: 9px 10px;
+      cursor: pointer;
+    }
+
+    .ac-list li.highlight,
+    .ac-list li:hover {
+      background: var(--active-bg);
+    }
+
+    .ac-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .ex-bottom {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .ex-bottom label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .ex-bottom .num-input {
+      width: 54px;
+      padding: 6px 4px;
+    }
+
+    .ex-actions {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+
+    .icon-btn {
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 8px;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .icon-btn:hover:not(:disabled) {
+      background: var(--btn-hover);
+    }
+
+    .icon-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .editor-summary {
+      margin: 14px 0 4px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .editor-actions {
+      position: sticky;
+      bottom: 0;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      padding: 12px 0;
+      background: var(--card-bg);
     }
 
     .update-banner {
@@ -419,6 +688,7 @@
       <button @click="refreshApp">Update</button>
     </div>
 
+    <template v-if="screen === 'timer'">
     <button v-if="!running && !finished" class="theme-btn" @click="toggleTheme">
       <!-- dark -->
       <svg
@@ -441,76 +711,240 @@
         />
       </svg>
     </button>
-    <button v-if="!running && !finished" class="edit-btn" @click="openSettings">Edit</button>
-
-    <div class="overlay" v-if="showSettings">
-      <div class="dialog">
-        <h2>Settings</h2>
-        <div class="dialog-field">
-          <label>Round time (s)</label>
-          <input type="number" v-model.number="editSecondsPerRound" min="1">
-        </div>
-        <div class="dialog-field">
-          <label>Rounds</label>
-          <input type="number" v-model.number="editTotalRounds" min="1" max="99">
-        </div>
-        <div class="dialog-field">
-          <label>Reps per round</label>
-          <input type="number" v-model.number="editDefaultReps" min="0">
-        </div>
-        <div class="dialog-actions">
-          <button class="dialog-cancel" @click="closeSettings">Cancel</button>
-          <button class="dialog-save" @click="saveSettings">Save</button>
-        </div>
-      </div>
-    </div>
+    <button v-if="!running && !finished" class="edit-btn" @click="screen = 'workouts'">Workouts</button>
 
     <div class="timer-section" :class="{ running: running, finished: finished }">
       <div class="timer-display">{{ formattedTime }}</div>
+      <div v-if="currentExerciseName" class="exercise-display">{{ currentExerciseName }}</div>
       <div class="round-display">Round: {{ currentRound }}/{{ totalRounds }}</div>
     </div>
 
-    <ul class="rounds-list">
-      <li
-        v-for="round in totalRounds"
-        :key="round"
-        class="round-row"
-        :class="{ active: round === currentRound && !isRoundCompleted(round), completed: isRoundCompleted(round) && !finished }"
-      >
-        <span class="round-label" @click="jumpToRound(round)">Round {{ round }}:</span>
-        <div class="rep-controls">
-          <button class="rep-btn" @click="decReps(round)">−</button>
-          <span class="rep-count">{{ reps[round - 1] }}</span>
-          <button class="rep-btn" @click="incReps(round)">+</button>
-        </div>
-      </li>
-    </ul>
+    <div class="workout-bar">
+      <div>
+        <div class="workout-name">{{ workout.name }}</div>
+        <div class="workout-summary">{{ durationSummary(workout) }}</div>
+      </div>
+      <button v-if="!running && !finished" class="link-btn" @click="openEditor(workout, 'timer')">Edit</button>
+    </div>
+
+    <div class="rounds">
+      <div v-for="group in roundGroups" :key="group.round">
+        <div v-if="isMulti" class="round-heading">Round {{ group.round }}</div>
+        <ul class="rounds-list">
+          <li
+            v-for="slot in group.slots"
+            :key="slot.index"
+            class="round-row"
+            :class="{ active: slot.index === currentSlotIndex && !isSlotCompleted(slot), completed: isSlotCompleted(slot) && !finished }"
+          >
+            <span class="round-label" @click="jumpToSlot(slot)">{{ isMulti ? slotLabel(slot) : 'Round ' + slot.round + ':' }}</span>
+            <div class="rep-controls">
+              <button class="rep-btn" @click="decReps(slot.index)">−</button>
+              <span class="rep-count">{{ reps[slot.index] }}</span>
+              <button class="rep-btn" @click="incReps(slot.index)">+</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
 
     <div class="controls">
       <button :class="finished ? 'btn-done' : 'btn-start'" @click="toggle" :disabled="finished">{{ finished ? 'All done!' : (running ? 'Pause' : (elapsed > 0 ? 'Resume' : 'Start')) }}</button>
       <button class="btn-reset" @click="reset">Reset</button>
     </div>
+    </template>
+
+    <div v-else-if="screen === 'workouts'" class="screen">
+      <div class="screen-header">
+        <button class="link-btn" @click="screen = 'timer'">‹ Back</button>
+        <h2>Workouts</h2>
+      </div>
+      <ul class="workout-list">
+        <li
+          v-for="w in workouts"
+          :key="w.id"
+          class="workout-item"
+          :class="{ active: w.id === workout.id }"
+          @click="selectWorkout(w)"
+        >
+          <div class="workout-item-info">
+            <div class="workout-name">{{ w.name }}</div>
+            <div class="workout-summary">{{ durationSummary(w) }}</div>
+            <div class="workout-exercises">{{ exerciseList(w) }}</div>
+          </div>
+          <div class="workout-item-actions">
+            <button class="link-btn" @click.stop="openEditor(w, 'workouts')">Edit</button>
+            <button v-if="workouts.length > 1" class="link-btn danger" @click.stop="deleteWorkout(w)">Delete</button>
+          </div>
+        </li>
+      </ul>
+      <button class="btn btn-primary btn-block" @click="openEditor(null, 'workouts')">+ New workout</button>
+    </div>
+
+    <div v-else-if="screen === 'editor' && editor" class="screen">
+      <div class="screen-header">
+        <h2>{{ editor.id ? 'Edit workout' : 'New workout' }}</h2>
+      </div>
+      <div class="form-field">
+        <label for="workout-name">Name</label>
+        <input id="workout-name" class="text-input" type="text" v-model="editor.name" placeholder="e.g. Full body">
+      </div>
+      <div class="form-field">
+        <label for="workout-rounds">Rounds</label>
+        <input id="workout-rounds" class="num-input" type="number" inputmode="numeric" v-model.number="editor.rounds" min="1" max="99">
+      </div>
+
+      <h3 class="section-title">Exercises per round</h3>
+      <div v-for="(ex, i) in editor.exercises" :key="ex.key" class="ex-item">
+        <div class="ex-top">
+          <span class="ex-num">{{ i + 1 }}</span>
+          <div class="ac-wrap">
+            <input
+              class="text-input ex-name"
+              type="text"
+              v-model="ex.name"
+              placeholder="Exercise"
+              autocomplete="off"
+              @focus="acOpen(i)"
+              @input="acOpen(i)"
+              @blur="acClose"
+              @keydown="acKeydown($event, i)"
+            >
+            <ul v-if="acOpenIndex === i && acSuggestions.length" class="ac-list">
+              <li
+                v-for="(s, si) in acSuggestions"
+                :key="s.name"
+                :class="{ highlight: si === acHighlight }"
+                @mousedown.prevent
+                @click="applySuggestion(i, s)"
+              >
+                <span>{{ s.name }}</span>
+                <span class="ac-meta">{{ s.seconds }}s · {{ s.reps }} reps</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="ex-bottom">
+          <label>Sec <input class="num-input" type="number" inputmode="numeric" v-model.number="ex.seconds" min="1"></label>
+          <label>Reps <input class="num-input" type="number" inputmode="numeric" v-model.number="ex.reps" min="0"></label>
+          <div class="ex-actions">
+            <button class="icon-btn" title="Move up" @click="moveExercise(i, -1)" :disabled="i === 0">↑</button>
+            <button class="icon-btn" title="Move down" @click="moveExercise(i, 1)" :disabled="i === editor.exercises.length - 1">↓</button>
+            <button class="icon-btn" title="Remove" @click="removeExercise(i)" :disabled="editor.exercises.length === 1">✕</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-block" @click="addExercise">+ Add exercise</button>
+
+      <div class="editor-summary">
+        One round: {{ formatDuration(editorRoundSeconds) }} · Total: {{ formatDuration(editorRoundSeconds * (editor.rounds || 0)) }}
+      </div>
+      <div class="editor-actions">
+        <button class="btn btn-secondary" @click="cancelEditor">Cancel</button>
+        <button class="btn btn-primary" @click="saveEditor">Save</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
+    const { createApp, ref, computed, watch, nextTick, onMounted, onUnmounted } = Vue;
+
+    const WORKOUTS_KEY = 'emomWorkouts';
+    const ACTIVE_WORKOUT_KEY = 'emomActiveWorkout';
+
+    function newId() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    }
+
+    function readJson(key) {
+      try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch (_) { return null; }
+    }
+
+    function loadWorkouts() {
+      const list = readJson(WORKOUTS_KEY);
+      if (Array.isArray(list) && list.length) return list;
+      // Migrate single-exercise settings from earlier versions.
+      const old = readJson('emomSettings');
+      return [{
+        id: newId(),
+        name: 'Simple EMOM',
+        rounds: old?.totalRounds || 10,
+        exercises: [{ name: '', seconds: old?.secondsPerRound || 60, reps: old?.defaultReps ?? 10 }],
+        updatedAt: Date.now(),
+      }];
+    }
+
+    function clampInt(value, min, max, fallback) {
+      const n = parseInt(value, 10);
+      return Number.isNaN(n) ? fallback : Math.min(max, Math.max(min, n));
+    }
+
+    function formatDuration(total) {
+      const h = Math.floor(total / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = String(total % 60).padStart(2, '0');
+      return h ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`;
+    }
+
+    function roundSeconds(w) {
+      return w.exercises.reduce((sum, ex) => sum + (Number(ex.seconds) || 0), 0);
+    }
+
+    function durationSummary(w) {
+      const r = roundSeconds(w);
+      return `${w.rounds} × ${formatDuration(r)} = ${formatDuration(w.rounds * r)}`;
+    }
+
+    function exerciseList(w) {
+      return w.exercises.map((ex, i) => `${ex.name || 'Exercise ' + (i + 1)} (${ex.reps})`).join(', ');
+    }
+
+    function wordsOf(text) {
+      return text.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+    }
 
     createApp({
       setup() {
-        const saved = JSON.parse(localStorage.getItem('emomSettings') || 'null');
-        const totalRounds = ref(saved?.totalRounds || 10);
-        const secondsPerRound = ref(saved?.secondsPerRound || 60);
-        const defaultReps = ref(saved?.defaultReps ?? 10);
+        const workouts = ref(loadWorkouts());
+        const activeId = ref(localStorage.getItem(ACTIVE_WORKOUT_KEY));
+        const workout = computed(() => workouts.value.find((w) => w.id === activeId.value) || workouts.value[0]);
+        function persistWorkouts() {
+          localStorage.setItem(WORKOUTS_KEY, JSON.stringify(workouts.value));
+        }
+        persistWorkouts();
 
-        const reps = ref(Array(totalRounds.value).fill(defaultReps.value));
+        const screen = ref('timer');
+        const isMulti = computed(() => workout.value.exercises.length > 1);
+        const totalRounds = computed(() => workout.value.rounds);
+
+        // One slot per exercise per round, laid out on a single timeline.
+        const slots = computed(() => {
+          const list = [];
+          let start = 0;
+          for (let r = 1; r <= workout.value.rounds; r++) {
+            workout.value.exercises.forEach((ex, exIndex) => {
+              list.push({ index: list.length, round: r, exIndex, name: ex.name, defaultReps: ex.reps, start, end: start + ex.seconds });
+              start += ex.seconds;
+            });
+          }
+          return list;
+        });
+
+        const roundGroups = computed(() => {
+          if (!isMulti.value) return [{ round: 0, slots: slots.value }];
+          const groups = [];
+          for (const slot of slots.value) {
+            if (!groups[slot.round - 1]) groups[slot.round - 1] = { round: slot.round, slots: [] };
+            groups[slot.round - 1].slots.push(slot);
+          }
+          return groups;
+        });
+
+        const reps = ref(slots.value.map((s) => s.defaultReps));
         const elapsed = ref(0);
         const running = ref(false);
         let intervalId = null;
 
-        const showSettings = ref(false);
-        const editTotalRounds = ref(totalRounds.value);
-        const editSecondsPerRound = ref(secondsPerRound.value);
-        const editDefaultReps = ref(defaultReps.value);
         const updateAvailable = ref(false);
         let reloadingForUpdate = false;
 
@@ -543,24 +977,31 @@
           localStorage.setItem('emomTheme', dark.value ? 'dark' : 'light');
         }
 
-        const currentRound = computed(() => {
-          const r = Math.floor(elapsed.value / secondsPerRound.value) + 1;
-          return Math.min(r, totalRounds.value);
+        const totalSeconds = computed(() => slots.value[slots.value.length - 1].end);
+
+        const currentSlotIndex = computed(() => {
+          const i = slots.value.findIndex((s) => elapsed.value < s.end);
+          return i === -1 ? slots.value.length - 1 : i;
         });
 
-        const timeInRound = computed(() => {
-          return secondsPerRound.value - (elapsed.value % secondsPerRound.value);
-        });
+        const currentSlot = computed(() => slots.value[currentSlotIndex.value]);
+        const currentRound = computed(() => currentSlot.value.round);
+
+        function slotLabel(slot) {
+          return slot.name || 'Exercise ' + (slot.exIndex + 1);
+        }
+
+        const currentExerciseName = computed(() => isMulti.value ? slotLabel(currentSlot.value) : currentSlot.value.name);
 
         const formattedTime = computed(() => {
           if (finished.value) return '00:00';
-          const t = timeInRound.value;
+          const t = currentSlot.value.end - elapsed.value;
           const m = Math.floor(t / 60);
           const s = t % 60;
           return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
         });
 
-        const finished = computed(() => elapsed.value >= totalRounds.value * secondsPerRound.value);
+        const finished = computed(() => elapsed.value >= totalSeconds.value);
 
         let audioCtx = null;
         function beep(freq = 660, duration = 120) {
@@ -582,16 +1023,13 @@
             stop();
             return;
           }
+          const slotBefore = currentSlotIndex.value;
           elapsed.value++;
-          if (elapsed.value % secondsPerRound.value === 0) {
-            if (finished.value) {
-              beep(523, 120); beep(659, 120); setTimeout(() => beep(784, 200), 150);
-            } else {
-              beep(880, 150);
-            }
-          }
           if (finished.value) {
+            beep(523, 120); beep(659, 120); setTimeout(() => beep(784, 200), 150);
             stop();
+          } else if (currentSlotIndex.value !== slotBefore) {
+            beep(880, 150);
           }
         }
 
@@ -614,75 +1052,237 @@
           running.value ? stop() : start();
         }
 
+        function resetProgress() {
+          elapsed.value = 0;
+          reps.value = slots.value.map((s) => s.defaultReps);
+        }
+
         function reset() {
           stop();
-          elapsed.value = 0;
-          reps.value = Array(totalRounds.value).fill(defaultReps.value);
+          resetProgress();
         }
 
-        function incReps(round) {
-          reps.value[round - 1]++;
-
-          if (round === currentRound.value) {
-            const updated = reps.value[round - 1];
-            for (let i = round; i < totalRounds.value; i++) {
-              reps.value[i] = updated;
-            }
+        // Changing the current slot carries the new value over to upcoming slots of the same exercise.
+        function propagateReps(index) {
+          if (index !== currentSlotIndex.value) return;
+          const { exIndex } = slots.value[index];
+          for (let j = index + 1; j < slots.value.length; j++) {
+            if (slots.value[j].exIndex === exIndex) reps.value[j] = reps.value[index];
           }
         }
 
-        function decReps(round) {
-          if (reps.value[round - 1] > 0) {
-            reps.value[round - 1]--;
+        function incReps(index) {
+          reps.value[index]++;
+          propagateReps(index);
+        }
 
-            if (round === currentRound.value) {
-              const updated = reps.value[round - 1];
-              for (let i = round; i < totalRounds.value; i++) {
-                reps.value[i] = updated;
-              }
-            }
+        function decReps(index) {
+          if (reps.value[index] > 0) {
+            reps.value[index]--;
+            propagateReps(index);
           }
         }
 
-        function jumpToRound(round) {
-          if (confirm('Jump to Round ' + round + '?')) {
+        function jumpToSlot(slot) {
+          const label = isMulti.value ? `Round ${slot.round}: ${slotLabel(slot)}` : `Round ${slot.round}`;
+          if (confirm('Jump to ' + label + '?')) {
             stop();
-            elapsed.value = (round - 1) * secondsPerRound.value;
+            elapsed.value = slot.start;
           }
         }
 
-        function isRoundCompleted(round) {
-          return elapsed.value >= round * secondsPerRound.value;
+        function isSlotCompleted(slot) {
+          return elapsed.value >= slot.end;
         }
 
-        function openSettings() {
-          editTotalRounds.value = totalRounds.value;
-          editSecondsPerRound.value = secondsPerRound.value;
-          editDefaultReps.value = defaultReps.value;
-          showSettings.value = true;
-        }
+        watch(currentSlotIndex, () => {
+          if (!running.value) return;
+          nextTick(() => {
+            document.querySelector('.round-row.active')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          });
+        });
 
-        function closeSettings() {
-          showSettings.value = false;
-        }
-
-        function saveSettings() {
-          const newRounds = Math.max(1, editTotalRounds.value || 1);
-          const newSeconds = Math.max(1, editSecondsPerRound.value || 1);
-          const newReps = Math.max(0, editDefaultReps.value || 0);
-
+        // Workouts
+        function activateWorkout(id) {
           stop();
-          totalRounds.value = newRounds;
-          secondsPerRound.value = newSeconds;
-          defaultReps.value = newReps;
-          elapsed.value = 0;
-          reps.value = Array(newRounds).fill(newReps);
-          localStorage.setItem('emomSettings', JSON.stringify({
-            totalRounds: newRounds,
-            secondsPerRound: newSeconds,
-            defaultReps: newReps,
-          }));
-          showSettings.value = false;
+          activeId.value = id;
+          localStorage.setItem(ACTIVE_WORKOUT_KEY, id);
+          resetProgress();
+        }
+
+        function selectWorkout(w) {
+          if (w.id !== workout.value.id) {
+            if (elapsed.value > 0 && !finished.value && !confirm('Discard progress of the current workout?')) return;
+            activateWorkout(w.id);
+          }
+          screen.value = 'timer';
+        }
+
+        function deleteWorkout(w) {
+          if (!confirm(`Delete workout "${w.name}"?`)) return;
+          const wasActive = w.id === workout.value.id;
+          workouts.value = workouts.value.filter((x) => x.id !== w.id);
+          persistWorkouts();
+          if (wasActive) activateWorkout(workouts.value[0].id);
+        }
+
+        // Editor
+        const editor = ref(null);
+        let editorReturnScreen = 'timer';
+        let exerciseKey = 0;
+
+        function editableExercise(ex) {
+          return { key: ++exerciseKey, name: ex.name, seconds: ex.seconds, reps: ex.reps };
+        }
+
+        function openEditor(w, returnScreen) {
+          editorReturnScreen = returnScreen;
+          editor.value = w
+            ? { id: w.id, name: w.name, rounds: w.rounds, exercises: w.exercises.map(editableExercise) }
+            : { id: null, name: '', rounds: 4, exercises: [editableExercise({ name: '', seconds: 60, reps: 10 })] };
+          acOpenIndex.value = -1;
+          screen.value = 'editor';
+          window.scrollTo(0, 0);
+        }
+
+        function cancelEditor() {
+          screen.value = editorReturnScreen;
+        }
+
+        function addExercise() {
+          const list = editor.value.exercises;
+          const last = list[list.length - 1];
+          list.push(editableExercise({ name: '', seconds: last?.seconds || 60, reps: last?.reps ?? 10 }));
+          nextTick(() => {
+            const inputs = document.querySelectorAll('.ex-name');
+            inputs[inputs.length - 1]?.focus();
+          });
+        }
+
+        function moveExercise(i, delta) {
+          const list = editor.value.exercises;
+          [list[i], list[i + delta]] = [list[i + delta], list[i]];
+        }
+
+        function removeExercise(i) {
+          editor.value.exercises.splice(i, 1);
+        }
+
+        const editorRoundSeconds = computed(() => editor.value ? roundSeconds(editor.value) : 0);
+
+        function saveEditor() {
+          const e = editor.value;
+          const id = e.id || newId();
+          const data = {
+            id,
+            name: e.name.trim() || 'Untitled workout',
+            rounds: clampInt(e.rounds, 1, 99, 1),
+            exercises: e.exercises.map((ex) => ({
+              name: ex.name.trim(),
+              seconds: clampInt(ex.seconds, 1, 3600, 60),
+              reps: clampInt(ex.reps, 0, 999, 0),
+            })),
+            updatedAt: Date.now(),
+          };
+
+          const idx = workouts.value.findIndex((w) => w.id === id);
+          if (idx === -1) workouts.value.push(data);
+          else workouts.value[idx] = data;
+          persistWorkouts();
+
+          if (!e.id) {
+            activateWorkout(id);
+            screen.value = 'timer';
+          } else {
+            if (id === workout.value.id) activateWorkout(id);
+            screen.value = editorReturnScreen;
+          }
+        }
+
+        // Exercise autocomplete, built from all saved workouts (latest values win)
+        const exerciseLibrary = computed(() => {
+          const map = new Map();
+          const sorted = [...workouts.value].sort((a, b) => (a.updatedAt || 0) - (b.updatedAt || 0));
+          for (const w of sorted) {
+            for (const ex of w.exercises) {
+              const name = ex.name.trim();
+              if (!name) continue;
+              const key = name.toLowerCase();
+              const count = (map.get(key)?.count || 0) + 1;
+              map.set(key, { name, seconds: ex.seconds, reps: ex.reps, count });
+            }
+          }
+          return map;
+        });
+
+        const acOpenIndex = ref(-1);
+        const acHighlight = ref(-1);
+
+        const acSuggestions = computed(() => {
+          const current = editor.value?.exercises[acOpenIndex.value];
+          if (!current) return [];
+
+          // Also offer exercises typed in other rows of this (unsaved) workout.
+          const candidates = new Map(exerciseLibrary.value);
+          editor.value.exercises.forEach((ex, i) => {
+            const name = ex.name.trim();
+            if (i === acOpenIndex.value || !name || candidates.has(name.toLowerCase())) return;
+            candidates.set(name.toLowerCase(), { name, seconds: clampInt(ex.seconds, 1, 3600, 60), reps: clampInt(ex.reps, 0, 999, 0), count: 0 });
+          });
+
+          const query = current.name.trim().toLowerCase();
+          const tokens = wordsOf(query);
+          const scored = [];
+          for (const [key, entry] of candidates) {
+            if (key === query) continue;
+            let score = 0;
+            if (query) {
+              const words = wordsOf(key);
+              if (key.startsWith(query)) score = 3;
+              else if (tokens.every((t) => words.some((w) => w.startsWith(t)))) score = 2;
+              else if (tokens.every((t) => key.includes(t))) score = 1;
+              else continue;
+            }
+            scored.push({ entry, score });
+          }
+          return scored
+            .sort((a, b) => b.score - a.score || b.entry.count - a.entry.count || a.entry.name.localeCompare(b.entry.name))
+            .slice(0, 8)
+            .map((s) => s.entry);
+        });
+
+        function acOpen(i) {
+          acOpenIndex.value = i;
+          acHighlight.value = -1;
+        }
+
+        function acClose() {
+          acOpenIndex.value = -1;
+        }
+
+        function acKeydown(event, i) {
+          const list = acSuggestions.value;
+          if (acOpenIndex.value !== i || !list.length) return;
+          if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            acHighlight.value = (acHighlight.value + 1) % list.length;
+          } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            acHighlight.value = (acHighlight.value - 1 + list.length) % list.length;
+          } else if (event.key === 'Enter' && acHighlight.value >= 0) {
+            event.preventDefault();
+            applySuggestion(i, list[acHighlight.value]);
+          } else if (event.key === 'Escape') {
+            acClose();
+          }
+        }
+
+        function applySuggestion(i, entry) {
+          const ex = editor.value.exercises[i];
+          ex.name = entry.name;
+          ex.seconds = entry.seconds;
+          ex.reps = entry.reps;
+          acClose();
         }
 
         function refreshApp() {
@@ -732,11 +1332,18 @@
           running,
           finished,
           currentRound,
+          currentSlotIndex,
+          currentExerciseName,
           formattedTime,
-          showSettings,
-          editTotalRounds,
-          editSecondsPerRound,
-          editDefaultReps,
+          screen,
+          workouts,
+          workout,
+          isMulti,
+          roundGroups,
+          slotLabel,
+          durationSummary,
+          exerciseList,
+          formatDuration,
           updateAvailable,
           dark,
           toggleTheme,
@@ -744,11 +1351,25 @@
           reset,
           incReps,
           decReps,
-          isRoundCompleted,
-          jumpToRound,
-          openSettings,
-          closeSettings,
-          saveSettings,
+          isSlotCompleted,
+          jumpToSlot,
+          selectWorkout,
+          deleteWorkout,
+          editor,
+          editorRoundSeconds,
+          openEditor,
+          cancelEditor,
+          addExercise,
+          moveExercise,
+          removeExercise,
+          saveEditor,
+          acOpenIndex,
+          acHighlight,
+          acSuggestions,
+          acOpen,
+          acClose,
+          acKeydown,
+          applySuggestion,
           refreshApp,
         };
       }

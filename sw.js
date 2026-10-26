@@ -1,4 +1,4 @@
-const CACHE_NAME = 'emom-v3';
+const CACHE_NAME = 'emom-v4';
 const APP_SHELL = './emom_timer.html';
 const ASSETS = [
   './',
